@@ -174,10 +174,11 @@
       
         <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Typora支持图片拖拽、复制粘贴的操作，并且能直接拷贝到对应目录下，这无疑非常方便，不用再有复制图片到对应目录下，然后再定义图片路径的过程。<br>然而，hexo框架只认识根目录下的source以及主题下的img，因此在typora上编辑文本正常显示，但是生成文件之后，无论是localhost:4000还是发布到网站上，都无法正常显示图片。</p>
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>下面简单提一下Typora在路径上的巧妙设置<br>首先，需要在Typora文件-&gt;偏好设置，图片插入的地方选择“拷贝到自定义路径”，因为其他几种方式都是拷贝到当前位置的assets或其他子目录下的，这样hexo肯定找不到。<br>所以你可以在source下建一个assets文件夹，并把拷贝路径设置到这里。<br>然而这还不够，你看到的路径应该类似于这样。</p>
-<p><img src="assets/2018112510131154.png" alt="在这里插入图片描述"></p>
+<p><img src="/assets/2018112510131154.png" alt="在这里插入图片描述"></p>
 <p>这样导致hexo能找到你网站的根目录下的assets，然而你图片在source目录下，这就尴尬了，我也卡在这里蛮久的。<br>下面点击编辑-&gt;图片工具-&gt;设置图片根目录，把目录设置到source，问题就解决啦，你会看到这样的路径</p>
-<p><img src="assets/2018112510172293.png" alt="在这里插入图片描述"></p>
+<p><img src="/assets/2018112510172293.png" alt="在这里插入图片描述"></p>
 <p>问题完美解决，再也不用愁图片找不到的事情了 。</p>
+<p><img src="/assets/touxiang.jpg" alt="touxiang"></p>
 <p><img src="/assets/38d462928e1394345d5aa8681f620326.jpg" alt="11"></p>
 
       
