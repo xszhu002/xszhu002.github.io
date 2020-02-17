@@ -8,18 +8,22 @@
   <link rel="dns-prefetch" href="https://xszhu002.github.io">
   <title>2020_02_17_03 | 小烧猪的天空</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="测试标签米思齐正文">
+  <meta name="description" content="引脚功能分类   功能简介 引脚编号    ADC: 模拟信号采样 32, 33, 34, 35, 36, 39   DAC: 模拟信号输出 25, 26   UART: 串行通信 1(TX0),3(RX0) ; 10(TX1),9(RX1) ; 17(TX2),16(RX2)   TOUCHPAD: 触摸传感器(检测手指接触引脚产生的电容差) 0, 2, 4, 12, 13, 14, 15,">
 <meta property="og:type" content="article">
-<meta property="og:title" content="2020_02_17_03">
+<meta property="og:title" content="ESP32引脚图">
 <meta property="og:url" content="https://xszhu002.github.io/2020/02/17/2020-02-17-03/index.html">
 <meta property="og:site_name" content="小烧猪的天空">
-<meta property="og:description" content="测试标签米思齐正文">
+<meta property="og:description" content="引脚功能分类   功能简介 引脚编号    ADC: 模拟信号采样 32, 33, 34, 35, 36, 39   DAC: 模拟信号输出 25, 26   UART: 串行通信 1(TX0),3(RX0) ; 10(TX1),9(RX1) ; 17(TX2),16(RX2)   TOUCHPAD: 触摸传感器(检测手指接触引脚产生的电容差) 0, 2, 4, 12, 13, 14, 15,">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://xszhu002.github.io/assets/esp32-gpio.png">
 <meta property="article:published_time" content="2020-02-17T14:03:32.000Z">
-<meta property="article:modified_time" content="2020-02-17T14:07:21.106Z">
+<meta property="article:modified_time" content="2020-02-17T15:38:31.298Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Mixly">
+<meta property="article:tag" content="ESP32">
+<meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xszhu002.github.io/assets/esp32-gpio.png">
   
     <link rel="alternative" href="/atom.xml" title="小烧猪的天空" type="application/atom+xml">
   
@@ -64,7 +68,7 @@
 	        
 				<li><a href="/tags/Ardiuo/">Ardiuo</a></li>
 	        
-				<li><a href="/tags/Mixly/%E7%B1%B3%E6%80%9D%E9%BD%90">Mixly</a></li>
+				<li><a href="/tags/Mixly/">Mixly</a></li>
 	        
 				<li><a href="/tags/Python/">Python</a></li>
 	        
@@ -180,7 +184,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      2020_02_17_03
+      ESP32引脚图
     </h1>
   
 
@@ -193,7 +197,40 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="测试标签米思齐"><a href="#测试标签米思齐" class="headerlink" title="测试标签米思齐"></a>测试标签米思齐</h1><p>正文</p>
+        <p> <img src="/assets/esp32-gpio.png" alt="ESP32-GPIO"></p>
+<h3 id="引脚功能分类"><a href="#引脚功能分类" class="headerlink" title="引脚功能分类"></a>引脚功能分类</h3><table>
+<thead>
+<tr>
+<th>功能简介</th>
+<th>引脚编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ADC</code>: 模拟信号采样</td>
+<td>32, 33, 34, 35, 36, 39</td>
+</tr>
+<tr>
+<td><code>DAC</code>: 模拟信号输出</td>
+<td>25, 26</td>
+</tr>
+<tr>
+<td><code>UART</code>: 串行通信</td>
+<td>1(TX0),3(RX0) ; 10(TX1),9(RX1) ; 17(TX2),16(RX2)</td>
+</tr>
+<tr>
+<td><code>TOUCHPAD</code>: 触摸传感器(检测手指接触引脚产生的电容差)</td>
+<td>0, 2, 4, 12, 13, 14, 15, 27, 32, 33</td>
+</tr>
+<tr>
+<td><code>SPI</code>: SPI总线接口</td>
+<td>hspi(14,12,13,15) vspi(23,19,18,5)</td>
+</tr>
+<tr>
+<td><code>I2C</code>: I2C总线接口</td>
+<td>SDA(21) SCL(22)</td>
+</tr>
+</tbody></table>
+<h3 id="只能作为输入的引脚"><a href="#只能作为输入的引脚" class="headerlink" title="只能作为输入的引脚"></a>只能作为输入的引脚</h3><p>除了 <em>GPIO34, GPIO35, GPIO36, GPIO39</em> 这四个 <code>GPIO</code> 引脚只能作为输入，而无法作为输出外,其他所有 <code>GPIO</code> 引脚都能进行双向输入输出</p>
 
       
 
@@ -229,6 +266,14 @@
 			 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Mixly</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ESP32</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Python</a>
         		</li>
       		
 		</ul>
@@ -439,6 +484,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">图像</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">ESP32</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Python</a>
               </li>
             
             <div class="clearfix"></div>
