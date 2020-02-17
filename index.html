@@ -177,7 +177,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/17/2020-02-17-03/">ESP32引脚图</a>
+      <a class="article-title" href="/2020/02/17/2020-02-17-03/">ESP32简单示例附引脚图</a>
     </h1>
   
 
@@ -224,7 +224,52 @@
 </tr>
 </tbody></table>
 <h3 id="只能作为输入的引脚"><a href="#只能作为输入的引脚" class="headerlink" title="只能作为输入的引脚"></a>只能作为输入的引脚</h3><p>除了 <em>GPIO34, GPIO35, GPIO36, GPIO39</em> 这四个 <code>GPIO</code> 引脚只能作为输入，而无法作为输出外,其他所有 <code>GPIO</code> 引脚都能进行双向输入输出</p>
+<h2 id="信息-数据-信号"><a href="#信息-数据-信号" class="headerlink" title="信息-数据-信号"></a>信息-数据-信号</h2><p>理解使用引脚接收传感器数据的过程,首先要理解 <code>信息</code>, <code>数据</code> 和 <code>信号</code> 的概念:</p>
+<blockquote>
+<p>信息是对现实事物存在方式或运动状态的描述，信息的表现形式可以是数学、文字、语言、图形及动画等，信息使这些表示形式包含了具体的内容和意义。<br>数据是信息的载体，它是信息的表示形式，可以是数字、字符、符号等。单独的数据没有实际的含义。数据和信息既有区别又有联系，数据是独立的，虽然数据本身并没有含义，但把数据按一定规则、形式组织起来时，就可以传达某种意义，这种具体意义的数据集合就是信息。例如，单独的英文字母：“h”，“o”，“r”，“s”，“e”，是没有意义的，但我们把它们组合起来成为一个单词“horse”时，它就具有“马”这样一个信息的意义了。<br>信号是数据在传输过程中的具体物理表示形式，具有确定的物理描述，如电压、磁场强度等。</p>
+</blockquote>
+<p>使用引脚的目的是为了发送或者接收一些信息,而这些信息是用数据表示的.计算机底层是没有办法理解数据的,但是能理解电平的高低,所以数据最终要以信号的方式从引脚流入或者流出,然后通过程序的处理转换为数据,被人类使用.也就是说信号是运载数据的工具，信号是数据的载体。信号包含光信号、声信号和电信号等.在今天的计算机内部处理中主要是 <code>电信号</code> (不是全部,比如计算机网络中的光纤是光信号).</p>
+<h3 id="电信号"><a href="#电信号" class="headerlink" title="电信号"></a>电信号</h3><p>电信号的本质是随着时间而改变电压或电流大小.电信号主要分为两种,一种是数字信号,另一种是模拟信号.</p>
+<ul>
+<li>数字信号: 电压或者电流的取值是离散的，幅值表示被限制在有限个数值之内。最常用的二进制码就是一种数字信号。在这种二进制体系中，用 <code>0</code> 表示 <code>低电平</code>, <code>1</code> 表示 <code>高电平</code>.(在编程的时候直接控制引脚 <code>高电平</code> 和 <code>低电平</code> 就可以了,具体高低电平对应什么电压,雨我无瓜)</li>
+<li>模拟信号: 电压或者电流的取值是连续的.</li>
+</ul>
+<p>假设横轴为时间可以把两种信号的波形化成下面的图展示出来:</p>
+<p><img src="/assets/digital-analog-1581954946434.png" alt="digital signal and analog signal"></p>
+<h2 id="Pin-类的使用"><a href="#Pin-类的使用" class="headerlink" title="Pin 类的使用"></a>Pin 类的使用</h2><p><code>MicroPython</code> 通过 <code>machine</code> 模块的 <code>Pin</code> 类控制各类 <code>GPIO</code> 引脚.</p>
+<h3 id="定义一个-Pin"><a href="#定义一个-Pin" class="headerlink" title="定义一个 Pin"></a>定义一个 Pin</h3><p>定义 <code>Pin</code> 可以传入以下参数:</p>
+<ul>
+<li>id：任意引脚号</li>
+<li>mode：引脚模式(输入,输出)</li>
+<li>pull：是否接入上拉\下拉电阻</li>
+<li>value：引脚电平状态(0 —低电平,1 —高电平)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pin &#x3D; Pin(12, mode&#x3D;Pin.OUT, pull&#x3D;None, value&#x3D;0)</span><br><span class="line">print(pin)</span><br></pre></td></tr></table></figure>
 
+<h3 id="Pin-init-mode-pull"><a href="#Pin-init-mode-pull" class="headerlink" title="Pin.init([mode[, pull]])"></a>Pin.init([mode[, pull]])</h3><p>在<code>pin</code> 定义中 <code>id</code> 为必填参数,其他参数可以通过 <code>init</code> 方法传入. <code>init</code> 方法用于初始化引脚</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> machine <span class="keyword">import</span> Pin</span><br><span class="line">pin = Pin(<span class="number">12</span>)</span><br><span class="line">pin.init(mode=Pin.OUT)  <span class="comment">#也可以写作pin.init(Pin.OUT)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Pin-value-value"><a href="#Pin-value-value" class="headerlink" title="Pin.value([value])"></a>Pin.value([value])</h3><p>通过 <code>value</code> 方法,控制引脚发出的信号.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pin = Pin(<span class="number">12</span>, mode=Pin.OUT, pull=<span class="literal">None</span>, value=<span class="number">0</span>)</span><br><span class="line">pin.value(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Pin-irq-trigger-handler"><a href="#Pin-irq-trigger-handler" class="headerlink" title="Pin.irq(trigger, handler)"></a>Pin.irq(trigger, handler)</h3><p>设置引脚的中断处理程序,在引脚的电平满足条件时运行回调函数</p>
+<p><code>trigger</code> 可选的参数有:</p>
+<ul>
+<li>Pin.IRQ_FALLING — 下降沿触发</li>
+<li>Pin.IRQ_RISING — 上升沿触发</li>
+</ul>
+<p><code>handler</code> 为中断被触发之后的回调函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pin = Pin(<span class="number">32</span>, Pin.IN)</span><br><span class="line">pin.irq(trigger=Pin.IRQ_FALLING, handler=<span class="keyword">lambda</span> t: print(<span class="string">"Triggered"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>然后用手触摸 <code>32</code> 号引脚之后,可以在终端看到输出.</p>
+<h2 id="数字信号示例-闪烁LED灯"><a href="#数字信号示例-闪烁LED灯" class="headerlink" title="数字信号示例: 闪烁LED灯"></a>数字信号示例: 闪烁LED灯</h2><p><img src="/assets/led-1581954946494.png" alt="led"></p>
+<p>使用 <code>ESP32</code> 开发板点亮上面的 <code>LED</code> 灯.点亮 <code>LED</code> 灯两种方式:</p>
+<ul>
+<li>灯正极接输出端, 灯负极接板子的 <code>GND</code>, 当输出端输出高电平时灯点亮;</li>
+<li>灯负极接输出端, 灯正极接板子的 <code>V5</code>, 当输出端输出低电平时灯点亮.</li>
+</ul>
+<p>首先从 <code>machine</code> 模块中导入了 <code>Pin</code> 这个类. 然后定义引脚为输入类型还是输出类型, 最后通过给引脚写入高低电平来控制 <code>LED</code> 灯的亮暗:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> machine <span class="keyword">import</span> Pin</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">led_pin = Pin(<span class="number">12</span>, mode=Pin.OUT, pull=<span class="literal">None</span>, value=<span class="number">0</span>)</span><br><span class="line">print(led_pin)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    led_pin.value(<span class="number">1</span>)</span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br><span class="line">    led_pin.value(<span class="number">0</span>)</span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
       
 
       
