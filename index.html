@@ -190,8 +190,23 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="选择开发展及端口"><a href="#选择开发展及端口" class="headerlink" title="选择开发展及端口"></a>选择开发展及端口</h2><p>插上ESP32开发板，选择<code>MicroPython[ESP32_Generic]</code>。端口选择<code>COM3</code>，端口号因电脑因插的USB口而异，请自行更改。</p>
+        <h2 id="硬件和软件的选择"><a href="#硬件和软件的选择" class="headerlink" title="硬件和软件的选择"></a>硬件和软件的选择</h2><p>软硬件的选择我这里概括成一句话：ESP32性能强劲，支持WIFI和蓝牙，价格便宜。Mixly有图形化界面，新手容易入手。</p>
+<h2 id="选择开发展类型及端口"><a href="#选择开发展类型及端口" class="headerlink" title="选择开发展类型及端口"></a>选择开发展类型及端口</h2><p>插上ESP32开发板，选择<code>MicroPython[ESP32_Generic]</code>。端口选择<code>COM3</code>，端口号因电脑因插的USB口而异，请自行更改。</p>
 <p><img src="/assets/2020_02_18_8.png" alt="选择开发展及端口"></p>
+<h2 id="初始化固件"><a href="#初始化固件" class="headerlink" title="初始化固件"></a>初始化固件</h2><p>我们买到的ESP32板自身不一定刷有支持MicroPython的固件，所以我拉的刷入固件。在刷入过程中，我们看到进度条不动时，要按住USB口左侧IO0按钮1到两秒。</p>
+<p><img src="/assets/2020_02_18_9.png" alt="2020_02_18_9"></p>
+<h2 id="点亮板载小灯"><a href="#点亮板载小灯" class="headerlink" title="点亮板载小灯"></a>点亮板载小灯</h2><p>板载小灯与P2引脚相连，所以我们编程时选择P2引脚。</p>
+<p><img src="/assets/2020_02_18_13.png" alt="2020_02_18_13"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> machine                           <span class="comment"># 导入 machine库</span></span><br><span class="line">pin2 = machine.Pin(<span class="number">2</span>, machine.Pin.OUT)   <span class="comment"># 设置pin2为数字输出</span></span><br><span class="line">pin2.value(<span class="number">1</span>)                            <span class="comment"># 2号脚为高电平</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="闪烁的板载小灯"><a href="#闪烁的板载小灯" class="headerlink" title="闪烁的板载小灯"></a>闪烁的板载小灯</h2><p>要让小灯闪烁起来，我们很容易想到应该让小灯亮一下再灭一下，如此往复。这里要注意的是，不管是亮还是灭，他要有个间隔时间，比如亮1秒再灭1秒。与Arduino会自动重复不同，在MicroPython中不能自动复生执行，所以这里要加上“当满足条件为真时重复执行”模块<code>while True</code>。</p>
+<p><img src="/assets/2020_02_18_10.png" alt="2020_02_18_10"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time          <span class="comment"># 导入time库</span></span><br><span class="line"><span class="keyword">import</span> machine       <span class="comment"># 导入 machine库</span></span><br><span class="line">pin2 = machine.Pin(<span class="number">2</span>, machine.Pin.OUT)   <span class="comment"># 设置pin2为数字输出</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:          <span class="comment"># 当条件为真时执行下列语句，起到重复执行的作用。</span></span><br><span class="line">    pin2.value(<span class="number">1</span>)    <span class="comment"># 2号脚为高电平</span></span><br><span class="line">    time.sleep_ms(<span class="number">1000</span>) <span class="comment"># 延时1000毫秒（1秒）</span></span><br><span class="line">    pin2.value(<span class="number">0</span>)    <span class="comment"># 2号脚为低高电平</span></span><br><span class="line">    time.sleep_ms(<span class="number">1000</span>) <span class="comment"># 延时1000毫秒（1秒）</span></span><br></pre></td></tr></table></figure>
+
+<p>这是让小灯闪烁的第二种方法，这里我不作注释，请同学们自己想一想他设计思路。</p>
+<p><img src="/assets/2020_02_18_12.png" alt="2020_02_18_12"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> machine</span><br><span class="line">pin2 = machine.Pin(<span class="number">2</span>, machine.Pin.OUT)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    pin2.value((<span class="keyword">not</span> pin2.value()))</span><br><span class="line">    time.sleep_ms(<span class="number">1000</span>)</span><br></pre></td></tr></table></figure>
+
 
       
 
