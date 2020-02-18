@@ -170,6 +170,215 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-MicroPython-ESP32-PWM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/18/MicroPython-ESP32-PWM/">MicroPython-ESP32 PWM</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/18/MicroPython-ESP32-PWM/" class="archive-article-date">
+  	<time datetime="2020-02-18T10:35:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="PWM-简介"><a href="#PWM-简介" class="headerlink" title="PWM 简介"></a>PWM 简介</h2><p><code>PWM</code> 的全称为 <code>Pulse Width Modulation</code>, 翻译成中文是 <code>脉冲宽度调节</code>, 是把模拟信号调制成脉波的技术. 数字信号只有低电平 <code>0</code> 和高电平 <code>1</code> 两种. 通过以快速切换高低电平来控制传感器引脚上的电压（和电流）的平均值.<br>举个 <code>LED</code> 灯的例子: 控制LED, 亮 <code>1s</code> 灭 <code>1s</code> 往复循环, 肉眼可见 <code>LED</code> 在不断闪烁. 然后把间隔时间缩短为: 亮 <code>100ms</code> 灭 <code>100ms</code> 往复循环就可以看到 <code>LED</code> 在快速闪烁. 把这个变换的持续缩小, 小于肉眼的视觉暂留时间, 人眼就会分辨不出来 <code>LED</code> 在闪烁, 而此时 <code>LED</code> 的亮度处在灭与亮之间,这时候 <code>LED</code> 就达到了正常的 <code>1/2</code> 亮度.</p>
+<p><img src="/assets/Duty_Cycle_Examples.png" alt="Duty_Cycle_Examples"></p>
+<p>当然亮的时间和暗的时间是可以不相等的, 这个比例是可以调节的. 通过这个比例的调节可以实现控制 <code>LED</code> 亮度的目的. 这个比例就是占空比(<code>duty</code>), 占空比的完整定义: 在一个周期内, 高电平时间占总体周期的比例. 例如假设 <code>PWM</code>的控制周期为 <code>10ms</code>, 其中 <code>8ms</code> 为高电平, <code>2ms</code> 为低电平, 则占空比就是 <code>8/10 = 80%</code></p>
+<p>在多数单片机中, 占空比并不是百分比. <code>ESP32</code> 的占空比取值范围为 <code>0 &lt;= duty &lt;= 1023</code>. 其本质就是把工作电压 <code>0-3.3v</code> 划分为 <code>1024</code> 个离散值.<br><code>PWM</code> 的第二个属性就是频率. 根据常识,频率为控制周期T的倒数. 假设 <code>10ms</code> 就是控制周期，那频率就是 <code>1 / 0.1 = 10HZ</code>. 频率的取值范围也是由由硬件决定的, <code>ESP32</code> 的 <code>PWM</code> 频率范围为 <code>0 &lt; freq &lt; 78126</code>.</p>
+<h2 id="MicroPython-PWM"><a href="#MicroPython-PWM" class="headerlink" title="MicroPython-PWM"></a>MicroPython-PWM</h2><p><code>MicroPython</code> 提供了专门针对 <code>PWM</code> 的模块.</p>
+<h3 id="PWM-定义"><a href="#PWM-定义" class="headerlink" title="PWM 定义"></a>PWM 定义</h3><p>首先是使用相应的引脚创建对应的对象, 然后调用对象的 <code>init</code> 方法传入频率和占空比初始化对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from machine import Pin,PWM</span><br><span class="line"></span><br><span class="line">pin &#x3D; Pin(12, Pin.OUT)</span><br><span class="line">pwm &#x3D; PWM(pin)</span><br><span class="line"># 初始化PWM 频率&#x3D;1000, 占空比&#x3D;512</span><br><span class="line">pwm.init(1000, 512)</span><br></pre></td></tr></table></figure>
+
+<p>也可以在新建 <code>PWM</code> 对象的时候直接传入频率和占空比:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from machine import Pin,PWM</span><br><span class="line"></span><br><span class="line">pin &#x3D; Pin(12, Pin.OUT)</span><br><span class="line">pwm &#x3D; PWM(pin, freq&#x3D;1000, duty&#x3D;512)</span><br></pre></td></tr></table></figure>
+
+<h3 id="单独设置频率和占空比"><a href="#单独设置频率和占空比" class="headerlink" title="单独设置频率和占空比"></a>单独设置频率和占空比</h3><p>除了定义的时候申明外, <code>PWM</code> 类还提供了单独设置频率和占空比的方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">led.freq(1000) # 设置频率</span><br><span class="line">led.duty(512) # 设置占空比</span><br></pre></td></tr></table></figure>
+
+<h3 id="关闭-PWM"><a href="#关闭-PWM" class="headerlink" title="关闭 PWM"></a>关闭 PWM</h3><p>使用完了 <code>PWM</code> 需要关闭对象:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">led.deinit()</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-PWM调节LED亮度"><a href="#示例-PWM调节LED亮度" class="headerlink" title="示例: PWM调节LED亮度"></a>示例: PWM调节LED亮度</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">from machine import Pin,PWM</span><br><span class="line"></span><br><span class="line">led &#x3D; PWM(Pin(12, Pin.OUT), freq&#x3D;1000)</span><br><span class="line">while True:</span><br><span class="line">    led.duty(1023)</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    led.duty(512)</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    led.duty(0)</span><br><span class="line">    time.sleep(1)</span><br></pre></td></tr></table></figure>
+
+<p>结合 <code>MQTT</code> 就可以写出一个可以通过网络控制的 <code>LED</code> 灯节点:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">from machine import Pin,PWM</span><br><span class="line">import math</span><br><span class="line"></span><br><span class="line">led &#x3D; PWM(Pin(12, Pin.OUT), freq&#x3D;1000)</span><br><span class="line">led.duty(1023)</span><br><span class="line"></span><br><span class="line">def breathing():</span><br><span class="line">    while True:</span><br><span class="line">        for i in range(1024):</span><br><span class="line">            led.duty(i)</span><br><span class="line">            client.check_msg()</span><br><span class="line">        for i in range(1023, 0, -1):</span><br><span class="line">            led.duty(i)</span><br><span class="line">            client.check_msg()</span><br><span class="line"></span><br><span class="line">def mqtt_callback(topic, msg):</span><br><span class="line">    msg &#x3D; json.loads(msg)</span><br><span class="line">    if &quot;mode&quot; in msg:</span><br><span class="line">        if msg[&#39;mode&#39;] &#x3D;&#x3D; &quot;breathing&quot;:</span><br><span class="line">            breathing()</span><br><span class="line">    else:</span><br><span class="line">        led.duty(msg[&#39;data&#39;] % 1024)</span><br><span class="line"></span><br><span class="line">client &#x3D; MQTTClient(TYPE + &quot;: &quot; + mac, config[&quot;MQTT_HOST&quot;], config[&quot;MQTT_PORT&quot;], config[&quot;MQTT_ACCOUNT&quot;], config[&quot;MQTT_PASSWORD&quot;])</span><br><span class="line">client.set_callback(mqtt_callback)</span><br><span class="line">client.connect()</span><br><span class="line">client.subscribe(mac)</span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    client.check_msg()</span><br><span class="line">    time.sleep(0.2)</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ESP32</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Python</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MicroPython</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">PWM</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/18/MicroPython-ESP32-PWM/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-ESP32引脚触碰应用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/18/ESP32%E5%BC%95%E8%84%9A%E8%A7%A6%E7%A2%B0%E5%BA%94%E7%94%A8/">ESP32引脚触碰应用</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/18/ESP32%E5%BC%95%E8%84%9A%E8%A7%A6%E7%A2%B0%E5%BA%94%E7%94%A8/" class="archive-article-date">
+  	<time datetime="2020-02-18T05:57:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ESP32自带的引脚有10带有触摸功能，这岂不是可以省去按钮了？让我们还尝试一下吧！</p>
+<h2 id="打印触碰引脚读数"><a href="#打印触碰引脚读数" class="headerlink" title="打印触碰引脚读数"></a>打印触碰引脚读数</h2><p>首先得把P15引脚初始化为触摸传感器，然后我们每间隔一次打印它的值吧。用手触摸是不是看到值在变化？</p>
+<p><img src="/assets/2020_02_18_14.png" alt="2020_02_18_14"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time                                <span class="comment"># 导入time库</span></span><br><span class="line"><span class="keyword">import</span> machine                             <span class="comment"># 导入machine库</span></span><br><span class="line">tc15 = machine.TouchPad(machine.Pin(<span class="number">15</span>))   <span class="comment"># 将P15初始化为触摸传感器</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:                                <span class="comment"># 重复执行</span></span><br><span class="line">    print(tc15.read())                     <span class="comment"># 打印P15数值</span></span><br><span class="line">    time.sleep_ms(<span class="number">1000</span>)                    <span class="comment"># 延时1000毫秒</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="触碰开关"><a href="#触碰开关" class="headerlink" title="触碰开关"></a>触碰开关</h2><p>接下来我们把引脚15当作触碰开关使用。</p>
+<img src="/assets/2020_02_18_15.png" alt="2020_02_18_15" style="zoom:80%;" />
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> machine</span><br><span class="line">pin2 = machine.Pin(<span class="number">2</span>, machine.Pin.OUT)</span><br><span class="line">tc15 = machine.TouchPad(machine.Pin(<span class="number">15</span>))</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    print(tc15.read())</span><br><span class="line">    time.sleep_ms(<span class="number">10</span>)</span><br><span class="line">    <span class="keyword">if</span> tc15.read() &lt; <span class="number">400</span>:</span><br><span class="line">        pin2.value(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        pin2.value(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<p>上述例子你会发现，只有用手碰到P15时灯是亮着的，手离开灯也就灭了。接下来我们把代码改进一下，使得更像我们生活中的电灯开关。</p>
+<p>【思路】</p>
+<p>在上面的基础上我们加一个变量，用于存储当前灯的状态，当前是开还是关。每触碰一次P15引脚，这个状态改变一次。为了防止在触碰过程过，连续改变状态，在改变之后加了一个300毫秒的延时。</p>
+<img src="/assets/2020_02_18_16.png" alt="2020_02_18_16" style="zoom: 80%;" />
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> machine</span><br><span class="line">i = bool(<span class="literal">False</span>)             <span class="comment"># 记录灯当前的状态 </span></span><br><span class="line">pin2 = machine.Pin(<span class="number">2</span>, machine.Pin.OUT)</span><br><span class="line">tc15 = machine.TouchPad(machine.Pin(<span class="number">15</span>))</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    time.sleep_ms(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> i == <span class="literal">True</span>:</span><br><span class="line">        pin2.value(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        pin2.value(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> tc15.read() &lt; <span class="number">500</span>:    <span class="comment"># 触碰一下改变一次i的状态。</span></span><br><span class="line">        i = <span class="keyword">not</span> i</span><br><span class="line">        time.sleep_ms(<span class="number">300</span>)   <span class="comment"># 延时是为了在触碰过程中多次改变。</span></span><br></pre></td></tr></table></figure>
+
+<p>【效果】（网页中能看到动画效果，PDF中嵌入的Gif无法播放动态效果）</p>
+<p><img src="/assets/2020_02_18_34.gif" alt="2020_02_18_34"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Mixly</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">ESP32</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MicroPython</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/18/ESP32%E5%BC%95%E8%84%9A%E8%A7%A6%E7%A2%B0%E5%BA%94%E7%94%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Mixly里用MicroPython连接ESP32" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -193,7 +402,7 @@
         <h2 id="硬件和软件的选择"><a href="#硬件和软件的选择" class="headerlink" title="硬件和软件的选择"></a>硬件和软件的选择</h2><p>软硬件的选择我这里概括成一句话：ESP32性能强劲，支持WIFI和蓝牙，价格便宜。Mixly有图形化界面，新手容易入手。</p>
 <h2 id="选择开发展类型及端口"><a href="#选择开发展类型及端口" class="headerlink" title="选择开发展类型及端口"></a>选择开发展类型及端口</h2><p>插上ESP32开发板，选择<code>MicroPython[ESP32_Generic]</code>。端口选择<code>COM3</code>，端口号因电脑因插的USB口而异，请自行更改。</p>
 <p><img src="/assets/2020_02_18_8.png" alt="选择开发展及端口"></p>
-<h2 id="初始化固件"><a href="#初始化固件" class="headerlink" title="初始化固件"></a>初始化固件</h2><p>我们买到的ESP32板自身不一定刷有支持MicroPython的固件，所以我拉的刷入固件。在刷入过程中，我们看到进度条不动时，要按住USB口左侧IO0按钮1到两秒。</p>
+<h2 id="初始化固件"><a href="#初始化固件" class="headerlink" title="初始化固件"></a>初始化固件</h2><p>我们买到的ESP32板自身不一定刷有支持MicroPython的固件，所以我拉的刷入固件。在刷入过程中，我们看到进度条不动时，要按住USB口左侧IO0按钮1到2秒。</p>
 <p><img src="/assets/2020_02_18_9.png" alt="2020_02_18_9"></p>
 <h2 id="点亮板载小灯"><a href="#点亮板载小灯" class="headerlink" title="点亮板载小灯"></a>点亮板载小灯</h2><p>板载小灯与P2引脚相连，所以我们编程时选择P2引脚。</p>
 <p><img src="/assets/2020_02_18_13.png" alt="2020_02_18_13"></p>
@@ -830,6 +1039,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">NeoPixel</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">PWM</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
             
             <div class="clearfix"></div>
