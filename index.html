@@ -170,6 +170,140 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-图灵机器人" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/19/%E5%9B%BE%E7%81%B5%E6%9C%BA%E5%99%A8%E4%BA%BA/">【转载】调用图灵机器人制作一个智能对话机器人</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/19/%E5%9B%BE%E7%81%B5%E6%9C%BA%E5%99%A8%E4%BA%BA/" class="archive-article-date">
+  	<time datetime="2020-02-19T03:02:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>1成为开发者注册</strong></p>
+<p>图灵网站：<a href="https://www.kancloud.cn/turing/web_api/522992" target="_blank" rel="noopener">https://www.kancloud.cn/turing/web_api/522992</a></p>
+<p>我的apikey：820c4a6ca4694063ab6002be1d1c63d3</p>
+<h4 id="编码方式"><a href="#编码方式" class="headerlink" title="编码方式"></a>编码方式</h4><p>UTF-8（调用图灵API的各个环节的编码方式均为UTF-8）</p>
+<h4 id="接口地址"><a href="#接口地址" class="headerlink" title="接口地址"></a>接口地址</h4><p><a href="http://openapi.tuling123.com/openapi/api/v2" target="_blank" rel="noopener">http://openapi.tuling123.com/openapi/api/v2</a></p>
+<p><img src="/assets/1008336-20180729143427024-1948114480.png" alt="img"></p>
+<h1 id="调用实例"><a href="#调用实例" class="headerlink" title="调用实例"></a>调用实例</h1><h2 id="1-python-调用实例"><a href="#1-python-调用实例" class="headerlink" title="1 python 调用实例"></a>1 python 调用实例</h2><p>1 安装python</p>
+<p>2安装库文件 request </p>
+<ol>
+<li>下载安装包</li>
+<li>CMD命令行进入文件夹下</li>
+<li>执行 python step.py install</li>
+</ol>
+<p>3写程序，点击调试</p>
+<p>打开编辑器</p>
+<p><img src="/assets/1008336-20180729142029740-935228422.png" alt="img"></p>
+<p>点击运行</p>
+<p><img src="/assets/1008336-20180729142410087-1532730904.png" alt="img"></p>
+<p>对话开始</p>
+<p><img src="/assets/1008336-20180729142346785-1662044324.png" alt="img"></p>
+<p>替换自己的开发者密钥</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">''' Python3'''</span></span><br><span class="line"><span class="keyword">import</span> requests<span class="comment">#导入requests库</span></span><br><span class="line"><span class="keyword">import</span> json<span class="comment">#导入json库</span></span><br><span class="line">key = <span class="string">'820c4a6ca4694063ab6002be1d1c63d3'</span><span class="comment">#单引号里写你注册的的图灵机器人key</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:<span class="comment">#主循环</span></span><br><span class="line">    info = input(<span class="string">'\n我：'</span>)<span class="comment">#输入对话信息</span></span><br><span class="line">    url = <span class="string">'http://www.tuling123.com/openapi/api?key='</span>+key+<span class="string">'&amp;info='</span>+info<span class="comment">#组成url</span></span><br><span class="line">    res = requests.get(url)<span class="comment">#得到网页HTML代码</span></span><br><span class="line">    res.encoding = <span class="string">'utf-8'</span><span class="comment">#防止中文乱码</span></span><br><span class="line">    jd = json.loads(res.text)<span class="comment">#将得到的json格式的信息转换为Python的字典格式</span></span><br><span class="line">    print(<span class="string">'\nTuling: '</span>+jd[<span class="string">'text'</span>])<span class="comment">#输出结果</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/assets/1008336-20180729142143749-2032027741.png" alt="img"></p>
+<p> 添加更多自定义对话：</p>
+<p>功能没开方</p>
+<p>扩展插件</p>
+<p>我下载的本版自带 pip下载工具</p>
+<p>cmd-pip<img src="/assets/1008336-20180729145918670-1011727488.png" alt="img"></p>
+<p>下载插件</p>
+<p> pip install HTMLParser</p>
+<p>如果提示版本问题，更新PIP</p>
+<p>别用开始里面的CMD 使用管理者权限</p>
+<p><img src="/assets/1008336-20180729150611561-1436253940.png" alt="img"></p>
+<p>请注意差别</p>
+<p><img src="/assets/1008336-20180729150711694-2093490583.png" alt="img"></p>
+<p> 输入</p>
+<p>python -m pip install -U pip</p>
+<p>开始更新</p>
+<p><img src="/assets/1008336-20180729150845744-534946194.png" alt="img"></p>
+<p>完毕后，正常下载其他插件</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="2网页直接点用示例"><a href="#2网页直接点用示例" class="headerlink" title="2网页直接点用示例"></a>2网页直接点用示例</h2><p> api = ‘<a href="http://www.tuling123.com/openapi/api?key=&#39;" target="_blank" rel="noopener">http://www.tuling123.com/openapi/api?key=&#39;</a> + 密钥+ ‘&amp;info=’+语音内容</p>
+<p>打开网页游览器 输入</p>
+<p><a href="http://www.tuling123.com/openapi/api?key=820c4a6ca4694063ab6002be1d1c63d3&amp;info=你是谁" target="_blank" rel="noopener">http://www.tuling123.com/openapi/api?key=820c4a6ca4694063ab6002be1d1c63d3&amp;info=你是谁</a></p>
+<p>网页返回得到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;code&quot;:100000,&quot;text&quot;:&quot;我是棒棒哒cortana&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/assets/1008336-20180729142224668-1449574438.png" alt="img"></p>
+<h2 id="3使用ESP8266直接HTTP访问交互"><a href="#3使用ESP8266直接HTTP访问交互" class="headerlink" title="3使用ESP8266直接HTTP访问交互"></a>3使用ESP8266直接HTTP访问交互</h2><p>语音识别模块—语音音频文件-ESP返回讯飞识别-识别结果给ESp–结果再给百度语音生成-ESP驱动语音模块读出</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">人工智能</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">语音识别</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">图灵机器人</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/19/%E5%9B%BE%E7%81%B5%E6%9C%BA%E5%99%A8%E4%BA%BA/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-MicroPython-ESP32-PWM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1047,6 +1181,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">人工智能</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">语音识别</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">图灵机器人</a>
               </li>
             
             <div class="clearfix"></div>
